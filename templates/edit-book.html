@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Library Manager</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='fonts/fontawesome/css/all.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/form-style1.css') }}">
+	<style>
+	</style>
+</head>
+<body>
+	<div id="app">
+		
+		<div class="sidenav">
+			<a href="/">Books</a>
+			<a href="/new-book">New Book</a>
+			{% if book is defined %}
+				<meta id="book-id" data-content="{{ book }}">
+				<a href="/edit-book/{{ book }}">Edit Book</a>
+			{% endif %}
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="register">
+					<h2>Bookforms</h2>
+					<small>Write a book one chapter at a time.</small>
+					<br><br>
+
+					<form action="/update-book" method="post" data-bind="with: book">
+
+						<label for="title-input">Title</label><br>
+						<input id="title-input" type="text" name="title" data-bind="textInput: title"><br>
+						<label for="author-input">Author</label><br>
+						<input id="author-input" type="text" name="author" data-bind="textInput: author"><br>
+						<label for="description-input">Description</label><br>
+						<textarea id="description-input" name="description" data-bind="textInput: description"></textarea>
+						<br>
+						<div style="text-align: right;">
+							<button type="button" class="btn1" data-bind="click: $root.exportPDF">Export PDF</button>
+							<a href="/new-chapter/{{ book }}" class="btn1">Add chapter</a>
+							<button type="button" id="save-btn" data-bind="click: updateBook">Save</button>
+						</div>
+
+					</form>
+					
+					{% if book is defined and books is defined %}
+						{% for b in books %}
+							{% if b.id|string() == book|string() %}
+								{% for chapter in b.chapters %}
+									<div class="chapter-list-item">
+										<h2><a href="/edit-chapter/{{ b.id }}/{{ chapter.id }}">{{ chapter.title }}</a></h2>
+										<p>{{ chapter.content }}</p>
+										<small>{{ chapter.date }}</small>
+									</div>
+								{% endfor %}
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+					
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+
+		</div>
+	</div>
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jspdf.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
+	<script>
+
+		function AppModelView() {
+			var self = this;
+			self.book = ko.observable();
+
+			self.BookModel = function(b) {
+				var bm = this;
+				bm.id = ko.observable(b.id);
+				bm.title = ko.observable(b.title);
+				bm.author = ko.observable(b.author);
+				bm.description = ko.observable(b.description);
+				bm.chapters = ko.observableArray();
+
+				bm.init = function() {
+					$.each(b.chapters, function(i, c) {
+						bm.chapters.push(new self.ChapterModel(c));
+					});
+				}
+
+				bm.updateBook = function() {
+					var chapters = [];
+					$.post("/update-book", { 
+						"id": bm.id(),
+						"title": bm.title(),
+						"author": bm.author(),
+						"description": bm.description(),
+						"chapters": ko.toJS(bm.chapters())
+					})
+					.done(function(data) {
+						alert("The book information has been updated.");
+					});
+				}
+
+				bm.init();
+			}
+
+			self.ChapterModel = function(c) {
+				var cm = this;
+				cm.title = ko.observable(c.title);
+				cm.content = ko.observable(c.content);
+				cm.date = ko.observable(c.date);
+			}
+
+			self.exportPDF = function() {
+				var doc = new jsPDF()
+
+				doc.setFontSize(24);
+				doc.text(self.book().title(), 10, 10);
+
+				doc.setFontSize(14);
+				doc.setFontType("italic");
+				doc.text(self.book().author(), 10, 20);
+
+				doc.setFontSize(18);
+				doc.setFontType("bold");
+				doc.text("Description:", 10, 30);
+				doc.setFontSize(14);
+				doc.setFontType("normal");
+				doc.text(self.book().description(), 10, 40);
+
+				var y = 50;
+				console.log(self.book().chapters());
+				$.each(self.book().chapters(), function(i, c) {
+					doc.setFontSize(24);
+					doc.setFontType("bold");
+					doc.text(c.title(), 10, y);
+					y += 10;
+					doc.setFontSize(14);
+					doc.setFontType("normal");
+					doc.text(c.content(), 10, y);
+					y += 10;
+				});
+				
+				doc.save(self.book().title() + '.pdf')
+			}
+
+			self.init = function() {
+				$.getJSON("/get-book", {id: $('#book-id').data().content})
+				.done(function(data) {
+					self.book(new self.BookModel(data));
+				});
+			}
+			self.init();
+		}
+
+		ko.applyBindings(new AppModelView(), document.getElementById("app"));
+	</script>
+</body>
+</html>

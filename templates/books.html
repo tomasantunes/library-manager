@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Library Manager</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='fonts/fontawesome/css/all.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/form-style1.css') }}">
+	<style>
+	</style>
+</head>
+<body>
+	<div class="sidenav">
+		<div class="sidenav">
+			<a href="/">Books</a>
+			<a href="/new-book">New Book</a>
+			{% if book is defined %}
+				<a href="/edit-book/{{ book }}">Edit Book</a>
+			{% endif %}
+		</div>
+	</div>
+	<div class="container">
+		<div class="book-list">
+			<h2>Books</h2>
+			{% for book in books %}
+				<div class="book-list-item">
+					<h2><a href="/edit-book/{{ book.id }}">{{ book.title }}</a></h2>
+					<small>{{ book.author }} {{ book.date }}</small>
+					<p> {{ book.description }} </p>
+				</div>
+			{% endfor %}
+		</div>
+
+		
+		<a href="/new-book" class="btn1">Create book</a>
+	</div>
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
+	<script>
+
+	</script>
+</body>
+</html>

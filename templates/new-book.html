@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Library Manager</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='fonts/fontawesome/css/all.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/form-style1.css') }}">
+	<style>
+	</style>
+</head>
+<body>
+	<div id="app">
+		
+		<div class="sidenav">
+			<a href="/">Books</a>
+			<a href="/new-book">New Book</a>
+			{% if book is defined %}
+				<meta id="book-id" data-content="{{book}}">
+				<a href="/edit-book/{{ book }}">Edit Book</a>
+			{% endif %}
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="register">
+					<h2>Library Manager</h2>
+					<br><br>
+
+					<form action="/add-book" method="post" data-bind="with: book">
+
+						<label for="title-input">Title</label><br>
+						<input id="title-input" type="text" name="title" data-bind="textInput: title"><br>
+						<label for="author-input">Author</label><br>
+						<input id="author-input" type="text" name="author" data-bind="textInput: author"><br>
+						<label for="description-input">Description</label><br>
+						<textarea id="description-input" name="description" data-bind="textInput: description"></textarea>
+						<label for="content-input">Content</label><br>
+						<textarea id="content-input" name="content" data-bind="textInput: content"></textarea>
+						<br>
+						<div style="text-align: right;">
+							<button type="submit" id="save-btn">Save</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+
+		</div>
+	</div>
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
+	<script>
+	</script>
+</body>
+</html>
