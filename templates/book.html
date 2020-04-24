@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Library Manager - Book</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='fonts/fontawesome/css/all.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/easy.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/tiny-date-picker.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/form-style1.css') }}">
+	<style>
+		.register {
+			width: 25%;
+			padding: 15px;
+			background-color: #ccc;
+			border-radius: 10px;
+		}
+
+		.table {
+			width: 75%;
+		}
+	</style>
+</head>
+<body>
+	<div id="book-view">
+		<div class="top-nav" id="top-nav1">
+		<a href="/">Home</a>
+		<a href="javascript:void(0);" class="icon" onclick="toggleMenu()">
+			<i class="fa fa-bars"></i>
+		</a>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="register">
+
+					<h2>Book</h2>
+					
+					<label>Title</label>
+					<input id="title-input" type="text" name="title">
+					<label>Author</label>
+					<input id="author-input" type="text" name="author">
+					<label>Content</label>
+					<textarea id="content-input" type="text" name="content">
+					<br>
+					<div class="row" style="text-align: center;">
+						<button type="submit" id="register-btn">Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+
+			</div>
+		</div>
+	</div>
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/tiny-date-picker.min.js') }}"></script>
+	<script>
+		function BookModelView() {
+
+		}
+
+		ko.applyBindings(new BookModelView(), document.getELementById("book-view"));
+	</script>
+</body>
+</html>
