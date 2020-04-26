@@ -61,7 +61,6 @@ def getBookById(id):
 		'content' : Markup(b[3]),
 		'author' : b[4],
 		'date' : datetime.datetime.strptime(b[5], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
-		'chapters' : [],
 	}
 
 	return book
@@ -101,7 +100,7 @@ def addBook():
 
 	if (title != "" and author != "" and description != ""):
 		db = connect_db()
-		db.execute('INSERT INTO books (title, author, description, date) VALUES (?, ?, ?, ?)', [title, author, description, content, date])
+		db.execute('INSERT INTO books (title, author, description, content, date) VALUES (?, ?, ?, ?, ?)', [title, author, description, content, date])
 		db.commit()
 		return redirect("/")
 	else:
@@ -113,12 +112,13 @@ def updateBook():
 	title = request.form.get('title', "")
 	author = request.form.get('author', "")
 	description = request.form.get('description', "")
+	content = request.form.get('content', "")
 
 	date = str(datetime.datetime.now())
 
 	if (title != "" and author != "" and description != ""):
 		db = connect_db()
-		db.execute('UPDATE books SET title = ?, author = ?, description = ?, date = ? WHERE id = ?;', (title, author, description, id))
+		db.execute('UPDATE books SET title = ?, author = ?, description = ?, content = ?, date = ? WHERE id = ?;', (title, author, description, content, date, id))
 		db.commit()
 		return redirect("/edit-book/" + id)
 	else:

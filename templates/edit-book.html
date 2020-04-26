@@ -35,28 +35,15 @@
 						<input id="author-input" type="text" name="author" data-bind="textInput: author"><br>
 						<label for="description-input">Description</label><br>
 						<textarea id="description-input" name="description" data-bind="textInput: description"></textarea>
+						<label for="content-input">Content</label><br>
+						<textarea id="content-input" name="content" data-bind="textInput: content"></textarea>
 						<br>
 						<div style="text-align: right;">
 							<button type="button" class="btn1" data-bind="click: $root.exportPDF">Export PDF</button>
-							<a href="/new-chapter/{{ book }}" class="btn1">Add chapter</a>
 							<button type="button" id="save-btn" data-bind="click: updateBook">Save</button>
 						</div>
 
 					</form>
-					
-					{% if book is defined and books is defined %}
-						{% for b in books %}
-							{% if b.id|string() == book|string() %}
-								{% for chapter in b.chapters %}
-									<div class="chapter-list-item">
-										<h2><a href="/edit-chapter/{{ b.id }}/{{ chapter.id }}">{{ chapter.title }}</a></h2>
-										<p>{{ chapter.content }}</p>
-										<small>{{ chapter.date }}</small>
-									</div>
-								{% endfor %}
-							{% endif %}
-						{% endfor %}
-					{% endif %}
 					
 
 				</div>
@@ -84,12 +71,10 @@
 				bm.title = ko.observable(b.title);
 				bm.author = ko.observable(b.author);
 				bm.description = ko.observable(b.description);
-				bm.chapters = ko.observableArray();
+				bm.content = ko.observable(b.content);
 
 				bm.init = function() {
-					$.each(b.chapters, function(i, c) {
-						bm.chapters.push(new self.ChapterModel(c));
-					});
+
 				}
 
 				bm.updateBook = function() {
@@ -99,7 +84,7 @@
 						"title": bm.title(),
 						"author": bm.author(),
 						"description": bm.description(),
-						"chapters": ko.toJS(bm.chapters())
+						"content": bm.content(),
 					})
 					.done(function(data) {
 						alert("The book information has been updated.");
@@ -107,13 +92,6 @@
 				}
 
 				bm.init();
-			}
-
-			self.ChapterModel = function(c) {
-				var cm = this;
-				cm.title = ko.observable(c.title);
-				cm.content = ko.observable(c.content);
-				cm.date = ko.observable(c.date);
 			}
 
 			self.exportPDF = function() {
@@ -134,17 +112,9 @@
 				doc.text(self.book().description(), 10, 40);
 
 				var y = 50;
-				console.log(self.book().chapters());
-				$.each(self.book().chapters(), function(i, c) {
-					doc.setFontSize(24);
-					doc.setFontType("bold");
-					doc.text(c.title(), 10, y);
-					y += 10;
-					doc.setFontSize(14);
-					doc.setFontType("normal");
-					doc.text(c.content(), 10, y);
-					y += 10;
-				});
+				doc.setFontSize(14);
+				doc.setFontType("normal");
+				doc.text(self.book().content(), 10, y);
 				
 				doc.save(self.book().title() + '.pdf')
 			}
