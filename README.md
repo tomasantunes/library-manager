@@ -11,3 +11,5 @@ python main.py
 ```
 
 Go to http://localhost:5000
+
+![Screenshot](https://i.imgur.com/7uLM0N3.png "Screenshot")
