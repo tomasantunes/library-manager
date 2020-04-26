@@ -70,6 +70,11 @@ def books():
 	books = getBooksList()
 	return render_template("books.html", books=books)
 
+@app.route("/get-books", methods=['GET'])
+def getBooks():
+	books = getBooksList()
+	return jsonify(books)
+
 @app.route("/new-book")
 def newBook():
 	return render_template("new-book.html")

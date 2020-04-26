@@ -7,38 +7,105 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/form-style1.css') }}">
 	<style>
+		.search-box {
+			padding: 15px 0;
+		}
 	</style>
 </head>
 <body>
-	<div class="sidenav">
+	<div id="app">
 		<div class="sidenav">
-			<a href="/">Books</a>
-			<a href="/new-book">New Book</a>
-			{% if book is defined %}
-				<a href="/edit-book/{{ book }}">Edit Book</a>
-			{% endif %}
+			<div class="sidenav">
+				<a href="/">Books</a>
+				<a href="/new-book">New Book</a>
+				{% if book is defined %}
+					<a href="/edit-book/{{ book }}">Edit Book</a>
+				{% endif %}
+			</div>
 		</div>
-	</div>
-	<div class="container">
-		<div class="book-list">
-			<h2>Books</h2>
-			{% for book in books %}
-				<div class="book-list-item">
-					<h2><a href="/edit-book/{{ book.id }}">{{ book.title }}</a></h2>
-					<small>{{ book.author }} {{ book.date }}</small>
-					<p> {{ book.description }} </p>
-				</div>
-			{% endfor %}
-		</div>
+		<div class="container">
+			<div class="book-list">
+				<h2>Books</h2>
 
-		
-		<a href="/new-book" class="btn1">Create book</a>
+				<div class="search-box">
+					<input type="text" id="search-input" data-bind="textInput: searchInput">
+				<button class="btn1" data-bind="click: search">Search</button>
+				</div>
+				
+				<div data-bind="foreach: searchBooks">
+					<div class="book-list-item">
+						<h2><a data-bind="text: title, click: editBook" style="cursor: pointer;"></a></h2>
+						<small data-bind="text: author"></small>
+						<p data-bind="text: description"></p>
+					</div>
+				</div>
+			</div>
+
+			
+			<a href="/new-book" class="btn1">Create book</a>
+		</div>
 	</div>
 	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
 	<script>
+		function AppModelView() {
+			var self = this;
+			self.books = ko.observableArray();
 
+			self.searchInput = ko.observable();
+			self.currentQuery = ko.observable();
+
+			self.search = function() {
+				self.currentQuery(self.searchInput());
+			}
+
+			self.searchBooks = ko.computed(function() {
+				if(!self.currentQuery()) {
+					return self.books(); 
+				} else {
+					return ko.utils.arrayFilter(self.books(), function(book) {
+						console.log(book.title());
+						console.log(self.currentQuery());
+						return book.title() == self.currentQuery();
+					});
+				}
+			});
+
+			self.BookModel = function(b) {
+				var bm = this;
+				bm.id = ko.observable(b.id);
+				bm.title = ko.observable(b.title);
+				bm.author = ko.observable(b.author);
+				bm.description = ko.observable(b.description);
+				bm.content = ko.observable(b.content);
+
+				bm.editBook = function() {
+					location.href = "/edit-book/" + bm.id()
+				}
+
+				bm.deleteBook = function() {
+					$.post("/delete-book", { 
+						"id": bm.id(),
+					})
+					.done(function(data) {
+						location.href = "/";
+					});
+				}
+			}
+
+			self.init = function() {
+				$.getJSON("/get-books")
+				.done(function(data) {
+					$.each(data, function(i, val) {
+						self.books.push(new self.BookModel(val));
+					});
+				});
+			}
+			self.init();
+		}
+
+		ko.applyBindings(new AppModelView(), document.getElementById("app"));
 	</script>
 </body>
 </html>

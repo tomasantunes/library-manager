@@ -74,12 +74,7 @@
 				bm.description = ko.observable(b.description);
 				bm.content = ko.observable(b.content);
 
-				bm.init = function() {
-
-				}
-
 				bm.updateBook = function() {
-					var chapters = [];
 					$.post("/update-book", { 
 						"id": bm.id(),
 						"title": bm.title(),
@@ -92,7 +87,6 @@
 					});
 				}
 				bm.deleteBook = function() {
-					var chapters = [];
 					$.post("/delete-book", { 
 						"id": bm.id(),
 					})
@@ -100,8 +94,6 @@
 						location.href = "/";
 					});
 				}
-
-				bm.init();
 			}
 
 			self.exportPDF = function() {
