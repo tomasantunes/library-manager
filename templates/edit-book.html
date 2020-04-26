@@ -40,6 +40,7 @@
 						<br>
 						<div style="text-align: right;">
 							<button type="button" class="btn1" data-bind="click: $root.exportPDF">Export PDF</button>
+							<button type="button" class="btn1" data-bind="click: deleteBook">Delete</button>
 							<button type="button" id="save-btn" data-bind="click: updateBook">Save</button>
 						</div>
 
@@ -88,6 +89,15 @@
 					})
 					.done(function(data) {
 						alert("The book information has been updated.");
+					});
+				}
+				bm.deleteBook = function() {
+					var chapters = [];
+					$.post("/delete-book", { 
+						"id": bm.id(),
+					})
+					.done(function(data) {
+						location.href = "/";
 					});
 				}
 

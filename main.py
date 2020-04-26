@@ -123,6 +123,18 @@ def updateBook():
 		return redirect("/edit-book/" + id)
 	else:
 		return "Submission Invalid"
+
+@app.route("/delete-book", methods=['POST'])
+def deleteBook():
+	id = request.form.get('id', "")
+
+	if (id != ""):
+		db = connect_db()
+		db.execute('DELETE FROM books WHERE id = ?;', (id,))
+		db.commit()
+		return redirect("/")
+	else:
+		return "Submission Invalid"
  
 if __name__ == "__main__":
 	init()
