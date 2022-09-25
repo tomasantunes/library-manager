@@ -7,6 +7,8 @@ Create a database of books
 Run these commands:
 ```
 pip install Flask
+cd static
+npm install
 python main.py
 ```
 
